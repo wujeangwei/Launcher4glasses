@@ -80,7 +80,7 @@
             android:stateNotNeeded="true"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="nosensor"
+            android:screenOrientation="landscape"
             android:resumeWhilePausing="true"
             android:taskAffinity=""
             android:enabled="true">
