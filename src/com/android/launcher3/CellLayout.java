@@ -62,6 +62,37 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Stack;
 
+//CG wujiangwei Add B for Launcher for Glass 2015.09.30
+import java.util.Collections;
+import android.R.string;
+import android.content.pm.ResolveInfo;
+import android.view.MenuItem;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import java.util.List;
+import android.content.Intent;
+import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.view.LayoutInflater;
+import android.content.ComponentName;
+import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.provider.MediaStore.Video.Thumbnails;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.widget.VideoView;
+import android.widget.MediaController;
+//CG wujiangwei Add E for Launcher for Glass 2015.09.30
+
 public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
     public static final int WORKSPACE_ACCESSIBILITY_DRAG = 2;
     public static final int FOLDER_ACCESSIBILITY_DRAG = 1;
@@ -82,6 +113,9 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
     @Thunk int mWidthGap;
     @Thunk int mHeightGap;
     private int mMaxGap;
+	//CG wujiangwei Add B for Launcher for Glass 2015.09.30
+	private int mCellIndex;
+	//CG wujiangwei Add E for Launcher for Glass 2015.09.30
     private boolean mDropPending = false;
     private boolean mIsDragTarget = true;
 
@@ -201,6 +235,10 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
         mPreviousReorderDirection[0] = INVALID_DIRECTION;
         mPreviousReorderDirection[1] = INVALID_DIRECTION;
 
+        //CG wujiangwei Add B for Launcher for Glass 2015.09.30
+        mCellIndex = a.getInt(R.styleable.CellLayout_cellIndex, 0);
+		//CG wujiangwei Add E for Launcher for Glass 2015.09.30
+		
         a.recycle();
 
         setAlwaysDrawnWithCacheEnabled(false);
@@ -281,8 +319,179 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
         mTouchFeedbackView = new ClickShadowView(context);
         addView(mTouchFeedbackView);
         addView(mShortcutsAndWidgets);
+        //CG wujiangwei Add B for Launcher for Glass 2015.09.30
+        if (1 == mCellIndex) {
+            Log.i("Gavin","mCellIndex is " + mCellIndex);
+			appListView = new ListView(context);
+			//appIconView = new ImageView(context);
+			MyAdapter myAdapter = new MyAdapter(context);
+            if(appListView != null){
+                appListView.setAdapter(myAdapter);
+            }else{
+                Log.i("wujiangwei","appListView is null");
+            }
+            appListView.setOnItemClickListener(myAdapter);
+            appListView.setDivider(null);
+            appListView.setSelector(android.R.color.transparent);
+            appListView.setVerticalScrollBarEnabled(false);
+            appListView.setOnScrollListener(myAdapter);
+            //appListView.setItemsCanFocus(true);
+            //appListView.setFocusableInTouchMode(true);
+            //appIconView.setOnClickListener(this);
+
+            //appListView.setPadding(0, 45, 0, 45);
+            addView(appListView);
+            //addView(appIconView);
+            //CG wujiangwei Add E for Launcher for Glass 2015.09.30
+        }
+    }
+    //CG wujiangwei Add B for Launcher for Glass 2015.09.30
+    private ListView appListView;
+    private ImageView appIconView;
+    private int appPosition = 0;
+    private PackageManager pm ;
+    ResolveInfo reInfo ;
+    String[] videoFileList = {
+            "storage/emulated/0/Movies/1.mp4",
+            "storage/emulated/0/Movies/2.mp4",
+            "storage/emulated/0/Movies/3.mp4"
+    };
+    class MyAdapter extends BaseAdapter implements OnItemSelectedListener,OnScrollListener, OnItemClickListener{
+        List<ResolveInfo> resolveInfos ;
+        private int mfirstVisibleItem;
+        private Context mcontext;
+
+        public MyAdapter(Context context) {
+            mcontext = context;
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            pm = context.getPackageManager();
+            resolveInfos = pm.queryIntentActivities(mainIntent, /*PackageManager.MATCH_DEFAULT_ONLY*/0);
+            Collections.sort(resolveInfos,new ResolveInfo.DisplayNameComparator(pm));
+        }
+
+        @Override
+        public int getCount() {
+            //return  resolveInfos.size();
+            // if(resolveInfos != null){
+            // return resolveInfos.size() * 3;
+            // }
+            // return 0;
+            return Integer.MAX_VALUE;//videoFileList.length;//
+        }
+
+        public Bitmap getItem(int position) {
+            Bitmap bmThumbnail;
+            bmThumbnail = ThumbnailUtils.createVideoThumbnail(videoFileList[position], Thumbnails.MINI_KIND);
+
+            return bmThumbnail;
+        }
+        @Override
+        public long getItemId(int position) {
+            //return position % resolveInfos.size();
+            return position;
+        }
+        public int getFirstVisibleItem() {
+            return mfirstVisibleItem % resolveInfos.size();
+        }
+        public String getFirstVisiblePkgName() {
+            return resolveInfos.get(getFirstVisibleItem()).activityInfo.packageName;
+        }
+        public String getFirstVisibleActivityName() {
+            return resolveInfos.get((int) getFirstVisibleItem()).activityInfo.name;
+        }
+        public int getSelectedItem() {
+            return (mfirstVisibleItem + 1) % resolveInfos.size();
+        }
+        public String getSelectedPkgName() {
+            return resolveInfos.get(getSelectedItem()).activityInfo.packageName;
+        }
+        public String getSelectedActivityName() {
+            return resolveInfos.get((int) getSelectedItem()).activityInfo.name;
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder vh = new ViewHolder();
+            if(convertView == null){
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                convertView = inflater.inflate(R.layout.appicon_list_item, null);
+                vh.iv = (ImageView) convertView.findViewById(R.id.appicon);
+                convertView.setFocusable(false);
+                convertView.setTag(vh);
+            }else{
+                vh = (ViewHolder)convertView.getTag();
+            }
+
+            reInfo = resolveInfos.get(position % resolveInfos.size());
+            String pkgName = reInfo.activityInfo.packageName;
+            String activityName = reInfo.activityInfo.name;
+            Drawable icon = reInfo.loadIcon(pm);
+
+
+            //Bitmap bmThumbnail;
+           // bmThumbnail = ThumbnailUtils.createVideoThumbnail(videoFileList[position], Thumbnails.FULL_SCREEN_KIND/*MICRO_KIND*/);
+           // if(bmThumbnail != null){
+           //     vh.iv.setImageBitmap(bmThumbnail);
+           // }else{
+           //     Log.i("wujiangwei","bmThumbnail is null !");
+                //vh.iv.setImageResource(R.drawable.cloudy);
+                vh.iv.setImageDrawable(icon);
+            //}
+            return convertView;
+        }
+
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        }
+
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+
+        @Override
+        public void onScrollStateChanged(final AbsListView view, int scrollState) {
+
+            switch (scrollState) {
+                case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+                    break;
+                case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+                    break;
+                case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            mfirstVisibleItem = firstVisibleItem;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //startSelectedApp();
+            Uri uri = Uri.parse("file:///" + videoFileList[position]);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Log.i("wujiangwei", uri.toString());
+            intent.setDataAndType(uri,"video/*");
+            getContext().startActivity(intent);
+        }
+
+    }
+    static class ViewHolder{
+        ImageView iv;
+        TextView tv;
     }
 
+    public void  startSelectedApp() {
+        String pkgName1 = ((MyAdapter) appListView.getAdapter()).getSelectedPkgName();
+        String activityName1 = ((MyAdapter) appListView.getAdapter()).getSelectedActivityName();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        ComponentName cn = new ComponentName(pkgName1, activityName1);
+        intent.setComponent(cn);
+        getContext().startActivity(intent);
+    }
+    //CG wujiangwei Add E for Launcher for Glass 2015.09.30
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void enableAccessibleDrag(boolean enable, int dragType) {
         mUseTouchHelper = enable;
@@ -862,6 +1071,14 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
                 MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
 
+        //wujiangwei Add B
+        if(appListView != null) {
+            appListView.measure(
+                    MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
+        }
+        //wujiangwei Add E
+
         int maxWidth = mShortcutsAndWidgets.getMeasuredWidth();
         int maxHeight = mShortcutsAndWidgets.getMeasuredHeight();
         if (mFixedWidth > 0 && mFixedHeight > 0) {
@@ -884,6 +1101,13 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
         mShortcutsAndWidgets.layout(left, top,
                 left + r - l,
                 top + b - t);
+        //wujiangwei Add B
+        if(appListView != null) {
+            appListView.layout(left, top,
+                    left + r - l,
+                    top + b - t);
+        }
+        //wujiangwei Add E
     }
 
     @Override
