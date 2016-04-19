@@ -260,5 +260,10 @@
 
     <!-- Accessibility confirmation for widget resize. -->
     <string name="widget_resized">Widget resized to width <xliff:g id="number" example="2">%1$s</xliff:g> height <xliff:g id="number" example="1">%2$s</xliff:g></string>
+	<string name="digital_gadget">Digital clock</string>
+	<string name="clock_24_hours_format" translatable="false">kk&#58;mm</string>
+    <string name="main_widget_12_hours_format" translatable="false">h&#58;mm</string>
+	<string name="desk_clock_help_url" translatable="false"></string>
+	<string name="weather_network_error">Network is not available.</string>
 
 </resources>

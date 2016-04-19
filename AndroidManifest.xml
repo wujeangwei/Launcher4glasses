@@ -62,6 +62,17 @@
     <uses-permission android:name="com.android.launcher3.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher3.permission.RECEIVE_LAUNCH_BROADCASTS" />
     <uses-permission android:name="com.android.launcher3.permission.RECEIVE_FIRST_LOAD_BROADCAST" />
+	<!-- cg sai.pan begin -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- cg sai.pan end -->
 
     <application
         android:allowBackup="@bool/enable_backup"
@@ -81,7 +92,7 @@
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="landscape"
-            android:resumeWhilePausing="true"
+            android:resumeWhilePausing="false"
             android:taskAffinity=""
             android:enabled="true">
             <intent-filter>
@@ -116,6 +127,7 @@
         <activity
             android:name="com.android.launcher3.ToggleWeightWatcher"
             android:label="@string/toggle_weight_watcher"
+            android:screenOrientation = "landscape"
             android:enabled="@bool/debug_memory_enabled"
             android:icon="@mipmap/ic_launcher_home">
             <intent-filter>
@@ -219,5 +231,59 @@
 
         <meta-data android:name="android.nfc.disable_beam_default"
                        android:value="true" />
+
+	<!-- cg sai.pan begin -->
+	<receiver android:name="com.android.launcher3.widget.EmptyAppWidgetProvider" android:label="@string/application_name"
+           android:icon="@mipmap/ic_launcher_home">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/empty_appwidget" />
+        </receiver>
+
+        <receiver android:name="com.android.launcher3.widget.DigitalAppWidgetProvider" android:label="@string/application_name"
+           android:icon="@mipmap/ic_launcher_home">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.android.deskclock.ON_QUARTER_HOUR" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/digital_appwidget" />
+        </receiver>
+		<service android:name="com.android.launcher3.widget.BatteryService" >
+			<intent-filter>
+				<action android:name="android.intent.action.battery" />
+			</intent-filter>
+		</service>
+
+		<service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.2" >
+                </action>
+            </intent-filter>
+        </service>
+
+		<meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="TgDz2SlX25bUs9qA9sZ81jm9" />
+	<receiver android:name="com.android.launcher3.widget.MagiclensAppWidgetProvider" android:label="@string/application_name"
+           android:icon="@mipmap/ic_launcher_home">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/magiclens_appwidget" />
+	</receiver>
+	<!-- cg sai.pan end -->
     </application>
 </manifest>

@@ -28,6 +28,7 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -282,7 +283,10 @@ public class Workspace extends PagedView
     private WorkspaceStateTransitionAnimation mStateTransitionAnimation;
 
     private AccessibilityDelegate mPagesAccessibilityDelegate;
-
+	// cg sai.pan begin
+	int beginMovedPage = 0;
+	int endMovedPage = 0;
+	// cg sai.pan end
     private final Runnable mBindPages = new Runnable() {
         @Override
         public void run() {
@@ -556,10 +560,21 @@ public class Workspace extends PagedView
 
         // Inflate the cell layout, but do not add it automatically so that we can get the newly
         // created CellLayout.
-        CellLayout newScreen = (CellLayout) mLauncher.getLayoutInflater().inflate(
-                        R.layout.workspace_screen, this, false /* attachToRoot */);
+        //Gavin Modify B for Launcher for Glass 2016.04.11
+        //CellLayout newScreen = (CellLayout) mLauncher.getLayoutInflater().inflate(
+                        //R.layout.workspace_screen, this, false /* attachToRoot */);
+        CellLayout newScreen = null;
+        if (0 == insertIndex) {
+            newScreen = (CellLayout)
+            mLauncher.getLayoutInflater().inflate(R.layout.workspace_screen_app, null);
+        } else {
+            newScreen = (CellLayout)
+            mLauncher.getLayoutInflater().inflate(R.layout.workspace_screen, null);
+        }
+
 
         newScreen.setOnLongClickListener(mLongClickListener);
+        //Gavin Modify E for Launcher for Glass 2016.04.11
         newScreen.setOnClickListener(mLauncher);
         newScreen.setSoundEffectsEnabled(false);
         mWorkspaceScreens.put(screenId, newScreen);
@@ -1032,6 +1047,7 @@ public class Workspace extends PagedView
 
         if (!(child instanceof Folder)) {
             child.setHapticFeedbackEnabled(false);
+            //Gavin Add B for Launcher for Glass 2016.04.11
             child.setOnLongClickListener(mLongClickListener);
         }
         if (child instanceof DropTarget) {
@@ -1196,10 +1212,26 @@ public class Workspace extends PagedView
                 enableChildrenCache(mCurrentPage - 1, mCurrentPage + 1);
             }
         }
+		// cg sai.pan begin
+		beginMovedPage = getCurrentPage();
+		//Log.e("sai", "onPageBeginMoving current page = " + getCurrentPage());
+		// cg sai.pan end
     }
 
     protected void onPageEndMoving() {
         super.onPageEndMoving();
+
+		// cg sai.pan begin
+		endMovedPage = getCurrentPage();
+		if (endMovedPage == 2 && beginMovedPage != endMovedPage) {
+			Intent mIntent = new Intent(Intent.ACTION_MAIN);
+			mIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			ComponentName component = new ComponentName("com.android.mms", "com.android.mms.ui.ConversationList");
+			mIntent.setComponent(component);
+			getContext().startActivity(mIntent);
+		}
+		//Log.e("sai", "onPageEndMoving current page = " + getCurrentPage());
+		// cg sai.pan end
 
         if (isHardwareAccelerated()) {
             updateChildrenLayersEnabled(false);

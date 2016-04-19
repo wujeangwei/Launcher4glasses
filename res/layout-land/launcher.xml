@@ -47,11 +47,13 @@
             android:id="@+id/hotseat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="right" />
+            android:layout_gravity="right"
+            android:visibility="gone"/>
 
         <include
             android:id="@+id/search_drop_target_bar"
-            layout="@layout/search_drop_target_bar" />
+            layout="@layout/search_drop_target_bar"
+	    android:visibility="gone" />
 
         <include layout="@layout/overview_panel"
             android:id="@+id/overview_panel"
@@ -67,7 +69,7 @@
             android:id="@+id/apps_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible" />
+            android:visibility="gone" />
     </com.android.launcher3.DragLayer>
 
     <ViewStub

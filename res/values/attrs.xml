@@ -70,6 +70,7 @@
         <attr name="heightGap" format="dimension" />
         <!-- The max gap size for each dimension -->
         <attr name="maxGap" format="dimension" />
+        <attr name="cellIndex" format="integer" />
     </declare-styleable>
 
     <!-- PagedView specific attributes. These attributes are used to customize

@@ -126,7 +126,21 @@
     <dimen name="profile_badge_size">24dp</dimen>
     <dimen name="profile_badge_margin">5dp</dimen>
     <dimen name="profile_badge_minimum_top">2dp</dimen>
-
+	<!-- cg sai.pan begin -->
+	<dimen name="digital_widget_list_margin_top">20dp</dimen>
+	<dimen name="bottom_text_spacing_digital">-8dp</dimen>
+	<dimen name="min_digital_widget_width">206dip</dimen>
+	<dimen name="min_digital_widget_height">206dip</dimen>
+	<dimen name="widget_label_font_size">16dp</dimen>
+	<dimen name="widget_big_font_size">80dp</dimen>
+	<dimen name="big_font_size">88dp</dimen>
+	<dimen name="label_font_size">16dp</dimen>
+	<dimen name="digital_widget_list_min_fixed_height">12dp</dimen>
+	<dimen name="digital_widget_list_min_scaled_height">162dp</dimen>
+	<dimen name="circletimer_dot_size">12dip</dimen>
+    <dimen name="circletimer_circle_size">4dip</dimen>
+    <dimen name="circletimer_marker_size">16dip</dimen>
+	<!-- cg sai.pan end -->
 <!-- Shadows and outlines -->
     <dimen name="blur_size_thin_outline">1dp</dimen>
     <dimen name="blur_size_medium_outline">2dp</dimen>

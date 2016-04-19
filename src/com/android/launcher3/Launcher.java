@@ -389,7 +389,9 @@ public class Launcher extends Activity
             unlockScreenOrientation(true);
         } else {
             setRequestedOrientation(
-                    ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+                    //Gavin B 2016.04.08
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//SCREEN_ORIENTATION_NOSENSOR);
+                    //Gavin E 2016.04.08
         }
     }
 
@@ -425,11 +427,14 @@ public class Launcher extends Activity
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
 
-        // Load configuration-specific DeviceProfile
-        mDeviceProfile = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE ?
-                        app.getInvariantDeviceProfile().landscapeProfile
-                            : app.getInvariantDeviceProfile().portraitProfile;
+//        // Load configuration-specific DeviceProfile
+//        mDeviceProfile = getResources().getConfiguration().orientation
+//                == Configuration.ORIENTATION_LANDSCAPE ?
+//                        app.getInvariantDeviceProfile().landscapeProfile
+//                            : app.getInvariantDeviceProfile().portraitProfile;
+        //Gavin B 2016.04.08
+        mDeviceProfile =  app.getInvariantDeviceProfile().landscapeProfile;
+        //Gavin E 2016.04.08
 
         mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
@@ -1196,14 +1201,15 @@ public class Launcher extends Activity
     }
 
     protected boolean hasSettings() {
-        if (mLauncherCallbacks != null) {
+		// cg sai.pan begin
+		/*if (mLauncherCallbacks != null) {
             return mLauncherCallbacks.hasSettings();
-        } else {
-            // On devices with a locked orientation, we will at least have the allow rotation
-            // setting.
-            return !Utilities.isRotationAllowedForDevice(this);
         }
+        return false;*/
+		return true;
+		// cg sai.pan begin
     }
+
 
     public void addToCustomContentPage(View customContent,
             CustomContentCallbacks callbacks, String description) {
@@ -1365,7 +1371,9 @@ public class Launcher extends Activity
         // Setup the hotseat
         mHotseat = (Hotseat) findViewById(R.id.hotseat);
         if (mHotseat != null) {
-            mHotseat.setOnLongClickListener(this);
+            // cg sai.pan begin
+			mHotseat.setOnLongClickListener(this);
+			// cg sai.pan end
         }
 
         mOverviewPanel = (ViewGroup) findViewById(R.id.overview_panel);
@@ -1410,7 +1418,9 @@ public class Launcher extends Activity
 
         // Setup the workspace
         mWorkspace.setHapticFeedbackEnabled(false);
+		// cg sai.pan begin
         mWorkspace.setOnLongClickListener(this);
+		// cg sai.pan end
         mWorkspace.setup(dragController);
         dragController.addDragListener(mWorkspace);
 
@@ -2758,11 +2768,18 @@ public class Launcher extends Activity
      */
     protected void onClickSettingsButton(View v) {
         if (LOGD) Log.d(TAG, "onClickSettingsButton");
-        if (mLauncherCallbacks != null) {
+        // cg sai.pan begin
+		/*if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onClickSettingsButton(v);
-        } else {
-            startActivity(new Intent(this, SettingsActivity.class));
-        }
+        }*/
+        Intent settings = new Intent(android.provider.Settings.ACTION_SETTINGS);
+        settings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        startActivity(settings);
+        // cg sai.pan end
+//        } else {
+//            startActivity(new Intent(this, SettingsActivity.class));
+//        }
     }
 
     public View.OnTouchListener getHapticFeedbackTouchListener() {
